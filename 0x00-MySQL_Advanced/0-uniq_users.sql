@@ -1,6 +1,4 @@
 -- Creates a table 'users'
-CREATE DATABASE holberton;
-USE holberton;
 
 CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
