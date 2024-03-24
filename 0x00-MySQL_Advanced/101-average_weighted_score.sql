@@ -15,9 +15,13 @@ BEGIN
     SELECT COUNT(*) INTO user_count
     FROM users;
 
-    SET loop_count = (user_count - 1);
+    IF user_count > 1 THEN
+        SET loop_count = (user_count - 1);
+    ELSEIF user_count = 1 THEN
+        SET loop_count = user_count;
+    END IF; 
     
-    WHILE loop_count <= user_count DO
+    WHILE loop_count <= user_count AND loop_count > 0 DO
         SELECT SUM(projects.weight * corrections.score)
         INTO score_project_weight
         FROM projects
@@ -29,16 +33,12 @@ BEGIN
         FROM corrections
         JOIN projects
         ON corrections.user_id = loop_count AND corrections.project_id = projects.id;
-
-        select '--score_weight--';
-        select score_project_weight;
-        select '-- --';
-        select '--project_weight--';
-        select project_weight_sum;
         
-        UPDATE users
-        SET average_score = (score_project_weight / project_weight_sum)
-        WHERE id = loop_count;
+        IF project_weight_sum > 0  AND project_weight_sum IS NOT NULL THEN
+            UPDATE users
+            SET average_score = (score_project_weight / project_weight_sum)
+            WHERE id = loop_count;
+        END IF;
 
         SET loop_count = (loop_count + 1);
     END WHILE;
