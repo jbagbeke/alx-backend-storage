@@ -3,6 +3,8 @@
 
 DELIMITER $$
 
+DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUsers;
+
 CREATE PROCEDURE ComputeAverageWeightedScoreForUsers()
 BEGIN
     DECLARE project_weight_sum INT;
@@ -28,6 +30,12 @@ BEGIN
         JOIN projects
         ON corrections.user_id = loop_count AND corrections.project_id = projects.id;
 
+        select '--score_weight--';
+        select score_project_weight;
+        select '-- --';
+        select '--project_weight--';
+        select project_weight_sum;
+        
         UPDATE users
         SET average_score = (score_project_weight / project_weight_sum)
         WHERE id = loop_count;
