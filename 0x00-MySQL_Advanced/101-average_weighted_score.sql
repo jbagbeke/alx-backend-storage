@@ -3,8 +3,6 @@
 
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUsers;
-
 CREATE PROCEDURE ComputeAverageWeightedScoreForUsers()
 BEGIN
     DECLARE project_weight_sum INT;
