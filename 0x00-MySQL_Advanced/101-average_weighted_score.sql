@@ -16,7 +16,7 @@ BEGIN
     FROM users;
 
     IF user_count > 1 THEN
-        SET loop_count = (user_count - 1);
+        SET loop_count = user_count - (user_count - 1);
     ELSEIF user_count = 1 THEN
         SET loop_count = user_count;
     END IF; 
@@ -34,13 +34,9 @@ BEGIN
         JOIN projects
         ON corrections.user_id = loop_count AND corrections.project_id = projects.id;
         
-        IF project_weight_sum > 0  AND project_weight_sum IS NOT NULL THEN
-            SELECT '-- TESTING --';
-            SELECT score_project_weight as TESTING;
-            UPDATE users
-            SET average_score = (score_project_weight / project_weight_sum)
-            WHERE id = loop_count;
-        END IF;
+        UPDATE users
+        SET average_score = (score_project_weight / project_weight_sum)
+        WHERE id = loop_count;
 
         SET loop_count = (loop_count + 1);
     END WHILE;
