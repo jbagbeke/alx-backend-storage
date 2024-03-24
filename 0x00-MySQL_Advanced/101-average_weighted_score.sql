@@ -35,6 +35,8 @@ BEGIN
         ON corrections.user_id = loop_count AND corrections.project_id = projects.id;
         
         IF project_weight_sum > 0  AND project_weight_sum IS NOT NULL THEN
+            SELECT '-- TESTING --';
+            SELECT score_project_weight as TESTING;
             UPDATE users
             SET average_score = (score_project_weight / project_weight_sum)
             WHERE id = loop_count;
