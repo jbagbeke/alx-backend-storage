@@ -1,0 +1,2 @@
+// Inserts a document in the collection school
+$1.school.insertOne({"name": "Holberton school"});
