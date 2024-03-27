@@ -13,6 +13,6 @@ if __name__ == '__main__':
         if not mongo_collection:
             return []
 
-        return [doc for doc in mongo_collection.find()]
-    
+        doc_list = mongo_collection.find()
+        return [doc for doc in doc_list]    
     
