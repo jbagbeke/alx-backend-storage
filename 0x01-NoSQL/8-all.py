@@ -9,6 +9,10 @@ if __name__ == '__main__':
         """
         Lists all docs in a mongodb collection
         """
-        return mongo_collection.find({})
+        
+        if not mongo_collection:
+            return []
+
+        return [doc for doc in mongo_collection.find()]
     
     
