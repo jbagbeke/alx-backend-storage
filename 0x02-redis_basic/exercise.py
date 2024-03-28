@@ -28,26 +28,27 @@ class Cache:
 
         return redis_key
 
-    @property
-    def get(self, key: str, fn: Optional[Callable] = None) -> Any:
+    def get(self, key: str, fn: Optional[Callable]=None) -> Any:
         """
         Converts data to back to desired format
         """
 
-        if fn:
-            return fn(key)
+        redis_response = self._redis.get(key)
 
-        return self._redis.get(key)
+        if redis_response:
+            if fn:
+                return fn(redis_response)
+            return redis_response        
+        return None
 
     def get_str(self, key: str) -> str:
         """
-        Decodes redis response with utf-8
+        Calls get function ecodes redis response with utf-8
         """
-        return self.get(key, fn=lambda x: x.decode('utf-8'))
+        return self.get(key, lambda x: x.decode('utf-8'))
 
     def get_int(self, key: str) -> int:
         """
-        Decodes redis response with utf-8 and type casts to int
+        Calls get function with int function which type casts to int
         """
-
-        return self.get(key, fn=lambda x: int(x.decode('utf-8')))
+        return self.get(key, lambda x: int(x))
