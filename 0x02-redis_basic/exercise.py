@@ -43,11 +43,11 @@ class Cache:
         """
         Decodes redis response with utf-8
         """
-        return self.get(key, lambda x: x.decode('utf-8'))
+        return self.get(key, fn=lambda x: x.decode('utf-8'))
 
     def get_int(self, key: str) -> int:
         """
         Decodes redis response with utf-8 and type casts to int
         """
 
-        return self.get(key, lambda x: int(x.decode('utf-8')))
+        return self.get(key, fn=lambda x: int(x.decode('utf-8')))
