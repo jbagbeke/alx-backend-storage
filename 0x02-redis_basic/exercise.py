@@ -42,7 +42,7 @@ class Cache:
             elif fn and fn == str:
                 return self.get_str(redis_response)
 
-            return redis_response
+            return redis_response.decode('utf-8')
 
     def get_str(self, redis_response: str) -> str:
         """
