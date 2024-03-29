@@ -3,8 +3,28 @@
 Creates a redis client instance class
 """
 import redis
+from functools import wraps
 from typing import Union, Callable, Any, Optional
 from uuid import uuid4
+
+
+def count_calls(method: Callable) -> Callable:
+    """
+    Wrapper function to keep track of number of times
+    a method was called
+    """
+    @wraps(method)
+    def cache_method_wrapper(self, *args, **kwargs):
+        method_calls = self._redis.get(str(method.__qualname__))
+        
+        if method_calls:
+            self._redis.incr(str(method.__qualname__))
+        else:
+            self._redis.set(str(method.__qualname__), 1)
+        
+        redis_key = method(self, *args, **kwargs)
+        return redis_key
+    return cache_method_wrapper
 
 
 class Cache:
@@ -19,6 +39,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Generates a random key(uuid) and stores it
