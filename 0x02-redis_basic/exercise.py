@@ -31,16 +31,15 @@ def call_history(method: Callable) -> Callable:
     """
     Stores method params and outputs when the method is called
     """
-    
     @wraps(method)
     def method_call_history(self, *args, **kwargs):
         inputs_key = str(method.__qualname__) + ":inputs"
         outputs_key = str(method.__qualname__) + ":outputs"
-        
+
         self._redis.rpush(inputs_key, str(args))
         redis_key_output = method(self, *args, **kwargs)
         self._redis.rpush(outputs_key, redis_key_output)
-        
+
         return redis_key_output
     return method_call_history
 
@@ -65,7 +64,7 @@ def replay(replay_func: Callable) -> None:
 
     for io in zipped_input_output:
         input, output = io
-        print("{}({}) -> {}".format(func_name, input, output.decode('utf-8')))
+        print("{}(*{}) -> {}".format(func_name, input.decode('utf-8'), output.decode('utf-8')))
 
 
 class Cache:
@@ -115,3 +114,12 @@ class Cache:
         Calls get function with int function which type casts to int
         """
         return self.get(key, lambda x: int(x))
+
+
+
+
+cache = Cache()
+cache.store("foo")
+cache.store("bar")
+cache.store(42)
+replay(cache.store)
