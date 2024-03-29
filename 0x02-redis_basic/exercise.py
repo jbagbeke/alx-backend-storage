@@ -60,7 +60,7 @@ def replay(replay_func: Callable) -> None:
 
     zipped_input_output = zip(func_inputs, func_outputs)
 
-    print("{} was called {} times".format(func_name, func_count.decode('utf-8')))
+    print("{} was called {} times:".format(func_name, func_count.decode('utf-8')))
 
     for io in zipped_input_output:
         input, output = io
@@ -114,12 +114,3 @@ class Cache:
         Calls get function with int function which type casts to int
         """
         return self.get(key, lambda x: int(x))
-
-
-
-
-cache = Cache()
-cache.store("foo")
-cache.store("bar")
-cache.store(42)
-replay(cache.store)
