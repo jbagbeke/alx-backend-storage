@@ -18,15 +18,15 @@ def redisCount(method: Callable) -> Callable:
     @wraps(method)
     def urlCount(*args):
         urlCount = "count:" + args[0]
-        urlResult = redisCache.get(args[0])
+        urlCache = "cache:" + args[0]
 
+        urlResult = redisCache.get(urlCache)
         redisCache.incr(urlCount)
 
         if not urlResult:
             url_request_result = method(*args)
 
-            redisCache.set(args[0], url_request_result)
-            redisCache.expire(args[0], 10)
+            redisCache.setex(urlCache, 10, url_request_result)
 
             return url_request_result
 
