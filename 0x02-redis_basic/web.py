@@ -17,21 +17,17 @@ def redisCount(method: Callable) -> Callable:
     a url was called
     """
     @wraps(method)
-    def urlCount(*args):
-        urlCount = "count:" + args[0]
-        urlCache = "cache:" + args[0]
+    def wrapper(url):  # sourcery skip: use-named-expression
+        """ Wrapper for decorator """
+        redisCache.incr(f"count:{url}")
+        cached_html = redisCache.get(f"cached:{url}")
+        if cached_html:
+            return cached_html.decode('utf-8')
+        html = method(url)
+        redisCache.setex(f"cached:{url}", 10, html)
+        return html
 
-        urlResult = redisCache.get(urlCache)
-        redisCache.incr(urlCount)
-
-        if not urlResult:
-            url_request_result = method(*args)
-            redisCache.setex(urlCache, 10, url_request_result)
-
-            return url_request_result
-        return urlResult.decode('utf-8')
-
-    return urlCount
+    return wrapper
 
 
 @redisCount
