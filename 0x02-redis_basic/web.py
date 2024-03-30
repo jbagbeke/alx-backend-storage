@@ -17,24 +17,20 @@ def redisCount(method: Callable) -> Callable:
 
     @wraps(method)
     def urlCount(*args):
-        urlKey = "count:" + args[0]
-        urlResult = redisCache.get(urlKey)
+        urlCount = "count:" + args[0]
+        urlResult = redisCache.get(args[0])
 
-        if urlResult:
-            redisCache.incr(urlKey)
-        else:
-            redisCache.set(urlKey, 1)
+        redisCache.incr(urlCount)
 
-        is_cached = redisCache.get(args[0])
-
-        if not is_cached:
+        if not urlResult:
             url_request_result = method(*args)
-            redisCache.setex(args[0], 10, url_request_result)
-            redisCache.expire(urlKey, 10)
-            
+
+            redisCache.set(args[0], url_request_result)
+            redisCache.expire(args[0], 10)
+
             return url_request_result
 
-        return is_cached.decode('utf-8')
+        return urlResult.decode('utf-8')
 
     return urlCount
 
