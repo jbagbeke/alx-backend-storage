@@ -33,7 +33,7 @@ def redisCount(method: Callable) -> Callable:
 
     return urlCount
 
-   
+
 @redisCount
 def get_page(url: str) -> str:
     """
