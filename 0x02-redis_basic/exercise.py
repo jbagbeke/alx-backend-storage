@@ -49,22 +49,23 @@ def replay(replay_func: Callable) -> None:
     Displays the history of calls of a particular function
     """
 
-    func_name = replay_func.__qualname__
-    func_instance = replay_func.__self__
-    inputs_key = func_name + ":inputs"
-    outputs_key = func_name + ":outputs"
+    fn_name = replay_func.__qualname__
+    fn_instance = replay_func.__self__
+    inputs_key = fn_name + ":inputs"
+    outputs_key = fn_name + ":outputs"
 
-    func_count = func_instance._redis.get(func_name)
-    func_inputs = func_instance._redis.lrange(inputs_key, 0, -1)
-    func_outputs = func_instance._redis.lrange(outputs_key, 0, -1)
+    fn_count = fn_instance._redis.get(fn_name)
+    fn_inputs = fn_instance._redis.lrange(inputs_key, 0, -1)
+    fn_outputs = fn_instance._redis.lrange(outputs_key, 0, -1)
 
-    zipped_input_output = zip(func_inputs, func_outputs)
+    zipped_input_output = zip(fn_inputs, fn_outputs)
 
-    print("{} was called {} times:".format(func_name, func_count.decode('utf-8')))
+    print("{} was called {} times:".format(fn_name, fn_count.decode('utf-8')))
 
     for io in zipped_input_output:
         input, output = io
-        print("{}(*{}) -> {}".format(func_name, input.decode('utf-8'), output.decode('utf-8')))
+        input, output = input.decode('utf=8'), output.decode('utf-8')
+        print("{}(*{}) -> {}".format(fn_name, input, output))
 
 
 class Cache:
@@ -90,7 +91,7 @@ class Cache:
 
         return redis_key
 
-    def get(self, key: str, fn: Optional[Callable]=None) -> Any:
+    def get(self, key: str, fn: Optional[Callable] = None) -> Any:
         """
         Converts data to back to desired format
         """
@@ -100,7 +101,7 @@ class Cache:
         if redis_response:
             if fn:
                 return fn(redis_response)
-            return redis_response        
+            return redis_response
         return None
 
     def get_str(self, key: str) -> str:
