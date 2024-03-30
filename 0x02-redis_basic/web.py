@@ -30,9 +30,10 @@ def redisCount(method: Callable) -> Callable:
         if not is_cached:
             url_request_result = method(*args)
             redisCache.setex(args[0], 10, url_request_result)
+            redisCache.expire(urlKey, 10)
             
             return url_request_result
-        redisCache.expire(urlKey, 10)
+
         return is_cached.decode('utf-8')
 
     return urlCount
