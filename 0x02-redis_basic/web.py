@@ -34,7 +34,6 @@ def redisCount(method: Callable) -> Callable:
             return url_request_result
         redisCache.expire(urlKey, 10)
         return is_cached.decode('utf-8')
-    
 
     return urlCount
 
