@@ -17,7 +17,7 @@ def redisCount(method: Callable) -> Callable:
 
     @wraps(method)
     def urlCount(*args):
-        urlKey = "count:{" + args[0] + "}"
+        urlKey = "count:" + args[0]
         urlResult = redisCache.get(urlKey)
 
         if urlResult:
@@ -32,7 +32,9 @@ def redisCount(method: Callable) -> Callable:
             redisCache.setex(args[0], 10, url_request_result)
             
             return url_request_result
+        redisCache.expire(urlKey, 10)
         return is_cached.decode('utf-8')
+    
 
     return urlCount
 
