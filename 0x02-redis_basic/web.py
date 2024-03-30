@@ -8,13 +8,14 @@ from typing import Callable
 from functools import wraps
 
 
+redisCache = redis.Redis()
+
+
 def redisCount(method: Callable) -> Callable:
     """
     Returns a wrapper that counts number of times
     a url was called
     """
-    redisCache = redis.Redis()
-
     @wraps(method)
     def urlCount(*args):
         urlCount = "count:" + args[0]
@@ -25,11 +26,9 @@ def redisCount(method: Callable) -> Callable:
 
         if not urlResult:
             url_request_result = method(*args)
-
             redisCache.setex(urlCache, 10, url_request_result)
 
             return url_request_result
-
         return urlResult.decode('utf-8')
 
     return urlCount
