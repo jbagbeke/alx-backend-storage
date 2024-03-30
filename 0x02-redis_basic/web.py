@@ -17,7 +17,7 @@ def redisCount(method: Callable) -> Callable:
 
     @wraps(method)
     def urlCount(*args):
-        urlKey = "count:{}".format(args[0])
+        urlKey = "count:{" + args[0] + "}"
         urlResult = redisCache.get(urlKey)
 
         if urlResult:
@@ -25,11 +25,15 @@ def redisCount(method: Callable) -> Callable:
         else:
             redisCache.set(urlKey, 1)
 
-        url_request_result = method(*args)
-        print(url_request_result)
-        redisCache.setex(args[0], 10, url_request_result)
+        is_cached = redisCache.get(args[0])
 
-        return url_request_result
+        if not is_cached:
+            url_request_result = method(*args)
+            redisCache.setex(args[0], 10, url_request_result)
+            
+            return url_request_result
+        return is_cached.decode('utf-8')
+
     return urlCount
 
    
@@ -37,10 +41,7 @@ def redisCount(method: Callable) -> Callable:
 def get_page(url: str) -> str:
     """
     Implements caching system with url"""
-    
-    try:
-        urlRequest = requests.get(url)    
-    except Exception:
-        print("Invalid URL passed")
+
+    urlRequest = requests.get(url)
 
     return urlRequest.text
